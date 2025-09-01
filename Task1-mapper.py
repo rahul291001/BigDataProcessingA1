@@ -25,7 +25,7 @@ for line in sys.stdin:
         trip_type = "short"
 
     # combine taxi ID and trip type into a string 
-    key = taxi_id + "_" + trip_type
+    key = f"{taxi_id}_{trip_type}"
 
     # If key not in dictionary, initialize list: [count, total_fare, max_fare, min_fare]
     if key not in dict:
@@ -37,27 +37,18 @@ for line in sys.stdin:
     # if it less than previous one, update min
         dict[key][0] += 1
         dict[key][1] += fare
-        if fare > dict[key][2]:
-            dict[key][2] = fare
-        if fare < dict[key][3]:
-            dict[key][3] = fare
+        dict[key][2] = max(dict[key][2], fare)
+        dict[key][3] = min(dict[key][3], fare)
 
 # Emit key-value pairs from dictionary
 # loop through every entry inside the dict
-for key in dict:
+for key, value in dict.items():
 
     # splite the key into two parts
     # then pick the first part and second parrt of each key
     # then also extract total trip for fare, max fare and min fare
-    taxi_trip = key.split("_")
-    taxi_id = taxi_trip[0]
-    trip_type = taxi_trip[1]
-    total_trips = dict[key][0]
-    total_fare = dict[key][1]
-    max_fare = dict[key][2]
-    min_fare = dict[key][3]
-    avg_fare = total_fare / total_trips
 
     # Output result with tab-separated fields
-    print('%s\t%d\t%.2f\t%.2f\t%.2f' % (key, total_trips, max_fare, min_fare, total_fare))
+    count, total_fare, max_fare, min_fare = value
+    print(f"{key}\t{count}\t{max_fare:.2f}\t{min_fare:.2f}\t{total_fare:.2f}")
 
